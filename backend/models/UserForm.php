@@ -17,12 +17,12 @@ class UserForm extends Model
     public $username;
     public $password_hash;
     public $code;
-    public $remember=true;
+    public $remember;
     public function rules()
     {
         return [
             [['username','password_hash'],'required'],
-            ['remmeber','boolean'],
+            ['remember','boolean'],
             ['code','captcha','captchaAction'=>'user/captcha'],
             ['username','mycheck'],
         ];
