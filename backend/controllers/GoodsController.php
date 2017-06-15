@@ -168,7 +168,8 @@ class GoodsController extends \yii\web\Controller
                     $imgUrl=$action->getWebUrl();
                     //使用七牛云插件
                     $qiniu=\Yii::$app->qiniu;
-                    $qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
+                    $qiniu->uploadFile($action->getSavePath(),$imgUrl);
+                    //$qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
                     $url = $qiniu->getLink($imgUrl);
                     $action->output['fileUrl']=$url;
 //                    $action->getFilename(); // "image/yyyymmddtimerand.jpg"

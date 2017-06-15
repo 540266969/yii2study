@@ -115,7 +115,8 @@ class BrandController extends \yii\web\Controller
                     //4调用getlink方法接收返回的路径信息
                     //5 把路径信息放入到uploadfy的output方法中,返回到输出页面
                     $qiniu=\Yii::$app->qiniu;
-                    $qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
+                    $qiniu->uploadFile($action->getSavePath(),$imgUrl);
+                    //$qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
                     $url = $qiniu->getLink($imgUrl);
                     $action->output['fileUrl']=$url;
                     //var_dump($url);
