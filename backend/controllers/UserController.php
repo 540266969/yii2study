@@ -4,14 +4,23 @@ namespace backend\controllers;
 
 use backend\models\User;
 use backend\models\UserForm;
+use yii\data\Pagination;
 use yii\web\Cookie;
 
 class UserController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $models=User::find()->where('status<>-1')->all();
-        return $this->render('index',['models'=>$models]);
+        $model=User::find()->where('status<>-1');
+        $count=$model->count();
+        //var_dump($count);exit;
+        $page=new Pagination([
+            'defaultPageSize'=>2,
+            'totalCount'=>$count,
+        ]);
+        $models=$model->offset($page->offset)->limit($page->limit)->all();
+        //var_dump($models);exit;
+        return $this->render('index',['models'=>$models,'page'=>$page]);
     }
 
     public function actionAdd(){
@@ -24,6 +33,7 @@ class UserController extends \yii\web\Controller
             //var_dump($model->auth_key);exit;
             $model->created_at=time();
             $model->save(false);
+            $model->addRoles($model->id);
             \Yii::$app->session->setFlash('success','添加成功');
             return $this->refresh();
         }
@@ -98,5 +108,17 @@ class UserController extends \yii\web\Controller
                 'maxLength'=>4,
             ],
         ];
+    }
+    //修改用户角色
+    public function actionEditUserRole($id){
+        $model=new User();
+        $model->getUserRole($id);
+        if($model->load(\Yii::$app->request->post())&&$model->validate()){
+            if($model->editRoles($id)){
+                \Yii::$app->session->setFlash('success','用户角色修改成功');
+                return $this->redirect(['user/edit-user-role','id'=>$id]);
+            }
+        }
+        return $this->render('edit-user-role',['model'=>$model]);
     }
 }

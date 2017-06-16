@@ -17,18 +17,18 @@
             <td><?=$model->username?></td>
             <td><?=$model->email?></td>
             <td><?=\backend\models\User::$message[$model->status]?></td>
-            <td><?=date('Y-m-d H:i:s',$model->created_at)?></td>
-            <td><?=date('Y-m-d H:i:s',$model->updated_at)?></td>
-            <td><?=date('Y-m-d H:i:s',$model->last_login_at)?></td>
+            <td><?=$model->created_at?date('Y-m-d H:i:s',$model->created_at):''?></td>
+            <td><?=$model->updated_at?date('Y-m-d H:i:s',$model->updated_at):''?></td>
+            <td><?=$model->last_login_at?date('Y-m-d H:i:s',$model->last_login_at):''?></td>
             <td><?=$model->last_login_ip?></td>
-            <td><?=\yii\bootstrap\Html::a('删除',['user/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?=\yii\bootstrap\Html::a('删除',['user/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?> <?=\yii\bootstrap\Html::a('修改用户角色',['user/edit-user-role','id'=>$model->id],['class'=>'btn btn-info btn-xs'])?></td>
         </tr>
     <?php endforeach;?>
 </table>
 <?php
-//echo \yii\widgets\LinkPager::widget([
-//    'pagination'=>$page,
-//    'nextPageLabel'=>'下一页',
-//    'prevPageLabel'=>'上一页',
-//]);
-//?>
+echo \yii\widgets\LinkPager::widget([
+    'pagination'=>$page,
+    'nextPageLabel'=>'下一页',
+   'prevPageLabel'=>'上一页',
+]);
+?>

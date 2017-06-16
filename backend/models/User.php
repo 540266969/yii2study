@@ -33,6 +33,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     public $newpassword;
     public $repassword;
     public $code;
+    public $roles=null;
     public static function tableName()
     {
         return 'user';
@@ -67,6 +68,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             ['repassword','compare','compareAttribute'=>'newpassword','message'=>'两次密码不一致','on'=>self::SCENARIO_PWD],
             ['repassword','compare','compareAttribute'=>'password_hash','message'=>'两次密码不一致','on'=>self::SCENARIO_ADD],
             [['email'],'email'],
+            ['roles','safe'],
         ];
     }
 
@@ -85,6 +87,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             'password_reset_token' => 'Password Reset Token',
             'email' => '邮箱',
             'status' => '状态',
+            'roles'=>'角色',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'last_login_ip' => 'Last Login Ip',
@@ -99,6 +102,41 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
+    //获取所有角色名称
+    public static function getRole(){
+        $authManager=Yii::$app->authManager;
+        return ArrayHelper::map($authManager->getRoles(),'name','description');
+    }
+    //添加角色
+    public function addRoles($id){
+        $authManager=\Yii::$app->authManager;
+        if($this->roles!=null){
+            foreach ($this->roles as $roleName){
+                $role=$authManager->getRole($roleName);
+                $authManager->assign($role,$id);
+            }
+        }
+        return true;
+    }
+    //获取所有选中角色
+    public function getUserRole($id){
+        $authManager=Yii::$app->authManager;
+        $userroles=$authManager->getRolesByUser($id);
+        foreach ($userroles as $userrole){
+            $this->roles[]=$userrole->name;
+        }
+    }
+    //修改用户角色,先清空全部,然后遍历循环获取所有勾选的角色名,添加上去
+    public function editRoles($id){
+        $authManager=Yii::$app->authManager;
+        $authManager->revokeAll($id);
+        foreach ($this->roles as $roleName){
+            $role=$authManager->getRole($roleName);
+            $authManager->assign($role,$id);
+        }
+        return true;
+
+    }
     public static function findIdentity($id)
     {
         return self::findOne(['id'=>$id]);
