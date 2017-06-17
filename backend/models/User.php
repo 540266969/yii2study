@@ -137,6 +137,21 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
         return true;
 
     }
+    //获取用户能够使用的菜单
+    public function GetMenus(){
+        $menus=Menu::find()->where(['parent_id'=>0])->all();
+        $menuItems=[];
+        foreach ($menus as $menu){
+            $items=[];
+            foreach ($menu->children as $child){
+                if(Yii::$app->user->can($child->url)){
+                    $items[]=['label'=>$child->name,'url'=>[$child->url]];
+                }
+            }
+            $menuItems[]=['label'=>$menu->name,'items'=>$items];
+        }
+        return $menuItems;
+    }
     public static function findIdentity($id)
     {
         return self::findOne(['id'=>$id]);

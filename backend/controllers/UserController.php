@@ -28,7 +28,7 @@ class UserController extends \yii\web\Controller
         $model->setScenario('add');
         if($model->load(\Yii::$app->request->post())&&$model->validate()){
             $model->password_hash=\Yii::$app->security->generatePasswordHash($model->password_hash);
-            //为什么生成随机字符串出现乱码呢?
+            //为什么生成随机字符串出现乱码呢? 函数调用错啦.....
             $model->auth_key=\Yii::$app->security->generateRandomString();
             //var_dump($model->auth_key);exit;
             $model->created_at=time();
@@ -121,4 +121,5 @@ class UserController extends \yii\web\Controller
         }
         return $this->render('edit-user-role',['model'=>$model]);
     }
+    //显示用户能够操作的菜单列表
 }
