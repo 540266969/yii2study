@@ -7,7 +7,7 @@ use yii\base\Exception;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
-class GoodsCategoryController extends \yii\web\Controller
+class GoodsCategoryController extends RbacFilterController
 {
     public function actionIndex()
     {

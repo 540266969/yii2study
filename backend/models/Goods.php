@@ -33,6 +33,10 @@ class Goods extends \yii\db\ActiveRecord
     public function getBrand(){
         return $this->hasOne(Brand::className(),['id'=>'brand_id']);
     }
+    public function getImage()
+    {
+        return $this->hasMany(GoodsImages::className(), ['goods_id' => 'id']);
+    }
     public static function tableName()
     {
         return 'goods';

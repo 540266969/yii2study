@@ -15,7 +15,7 @@ use backend\models\Article;
 use yii\data\Pagination;
 use yii\web\Controller;
 
-class ArticleController extends Controller
+class ArticleController extends RbacFilterController
 {
     public function actionAdd(){
         $model=new Article();

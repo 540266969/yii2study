@@ -7,15 +7,23 @@ use backend\models\Goods;
 use backend\models\GoodsCategory;
 use backend\models\GoodsDayCount;
 use backend\models\GoodsIntro;
-use backend\models\Goodssearch;
 use xj\uploadify\UploadAction;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
-use yii\web\UploadedFile;
-
-class GoodsController extends \yii\web\Controller
+use yii\web\Controller;
+use backend\components\RbacFilters;
+class GoodsController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className(),
+                'only'=>['index','edit','add','del'],
+            ]
+        ];
+    }
     //显示到主页面;
     public function actionIndex()
     {

@@ -21,7 +21,7 @@
             <td><?=$model->updated_at?date('Y-m-d H:i:s',$model->updated_at):''?></td>
             <td><?=$model->last_login_at?date('Y-m-d H:i:s',$model->last_login_at):''?></td>
             <td><?=$model->last_login_ip?></td>
-            <td><?=\yii\bootstrap\Html::a('删除',['user/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?> <?=\yii\bootstrap\Html::a('修改用户角色',['user/edit-user-role','id'=>$model->id],['class'=>'btn btn-info btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('user/del')? \yii\bootstrap\Html::a('删除',['user/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?> <?=Yii::$app->user->can('user/edit-user-role')? \yii\bootstrap\Html::a('修改用户角色',['user/edit-user-role','id'=>$model->id],['class'=>'btn btn-info btn-xs']):''?> <?=Yii::$app->user->can('user/reset-password')? \yii\bootstrap\Html::a('重置密码',['user/reset-password','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?></td>
         </tr>
     <?php endforeach;?>
 </table>

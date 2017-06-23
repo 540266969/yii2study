@@ -1,4 +1,3 @@
-<div><?=\yii\bootstrap\Html::a('添加',['article-category/add'],['class'=>'btn btn-primary'])?></div>
 <table class="table table-bordered table-striped">
     <tr>
         <th>ID</th>
@@ -17,7 +16,7 @@
             <td><?=$model->sort?></td>
             <td><?=\backend\models\Brand::$statuItem[$model->status]?></td>
             <td><?=$model->is_help?'是':'否'?></td>
-            <td><?=\yii\bootstrap\Html::a('编辑',['article-category/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['article-category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('article-category/edit')? \yii\bootstrap\Html::a('编辑',['article-category/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs']):''?> <?=Yii::$app->user->can('article-category/del')? \yii\bootstrap\Html::a('删除',['article-category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?></td>
         </tr>
     <?php endforeach;?>
 </table>

@@ -2,13 +2,25 @@
 
 namespace backend\controllers;
 
+use backend\components\RbacFilters;
 use backend\models\Brand;
 use yii\data\Pagination;
+use yii\web\Controller;
 use yii\web\UploadedFile;
 use xj\uploadify\UploadAction;
 
-class BrandController extends \yii\web\Controller
+class BrandController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className(),
+                'only'=>['index','edit','add','del'],
+            ]
+        ];
+    }
+
     public function actionIndex()
     {
         //$models=Brand::find()->where('status<>-1')->all();

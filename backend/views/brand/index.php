@@ -15,7 +15,7 @@
             <td><?=\yii\bootstrap\Html::img($model->logo,['width'=>50]);?></td>
             <td><?=$model->sort?></td>
             <td><?=\backend\models\Brand::$statuItem[$model->status]?></td>
-            <td><?=\yii\bootstrap\Html::a('编辑',['brand/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['brand/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('brand/edit')? \yii\bootstrap\Html::a('编辑',['brand/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs']):''?> <?=Yii::$app->user->can('brand/del')? \yii\bootstrap\Html::a('删除',['brand/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?></td>
         </tr>
     <?php endforeach;?>
 </table>
@@ -25,4 +25,5 @@ echo \yii\widgets\LinkPager::widget([
     'nextPageLabel'=>'下一页',
     'prevPageLabel'=>'上一页',
 ]);
+
 ?>

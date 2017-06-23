@@ -12,7 +12,7 @@ namespace backend\controllers;
 use backend\models\ArticleDetail;
 use yii\web\Controller;
 
-class ArticleDetailController extends Controller
+class ArticleDetailController extends RbacFilterController
 {
     public function actionView($id){
         $model=ArticleDetail::findOne(['article_id'=>$id]);

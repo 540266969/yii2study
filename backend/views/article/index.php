@@ -17,7 +17,7 @@
             <td><?=$model->sort?></td>
             <td><?=\backend\models\Article::$statuItem[$model->status]?></td>
             <td><?=$model->articleCategory->name?></td>
-            <td><?=\yii\bootstrap\Html::a('编辑',['article/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['article/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?> <?=\yii\bootstrap\Html::a('详情',['article-detail/view','id'=>$model->id],['class'=>'btn btn-success btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('article/edit')? \yii\bootstrap\Html::a('编辑',['article/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs']):''?> <?=Yii::$app->user->can('article/edit')? \yii\bootstrap\Html::a('删除',['article/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?> <?=Yii::$app->user->can('article-detail/view')? \yii\bootstrap\Html::a('详情',['article-detail/view','id'=>$model->id],['class'=>'btn btn-success btn-xs']):''?></td>
         </tr>
     <?php endforeach;?>
 </table>

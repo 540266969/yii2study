@@ -27,6 +27,10 @@ class GoodsCategory extends \yii\db\ActiveRecord
     public function getGoodscat(){
         return $this->hasOne(GoodsCategory::className(),['id'=>'parent_id']);
     }
+    //建立一对多的关系
+    public function getChildren(){
+        return $this->hasMany(GoodsCategory::className(),['parent_id'=>'id']);
+    }
     public static function tableName()
     {
         return 'goods_category';

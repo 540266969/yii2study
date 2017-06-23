@@ -42,7 +42,7 @@
             <td><?=$model->is_no_sale?'在售':'下架'?></td>
             <td><?=$model->status?'正常':'回收站'?></td>
             <td><?=$model->sort?></td>
-            <td><?=\yii\bootstrap\Html::a('编辑',['goods/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['goods/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?> <?=\yii\bootstrap\Html::a('上传商品图',['goods-images/add','id'=>$model->id],['class'=>'btn btn-success btn-xs'])?> <?=\yii\bootstrap\Html::a('修改商品图',['goods-images/index','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('goods/edit')? \yii\bootstrap\Html::a('编辑',['goods/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs']):''?> <?=Yii::$app->user->can('goods/del')? \yii\bootstrap\Html::a('删除',['goods/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?> <?=Yii::$app->user->can('goods-images/add')?\yii\bootstrap\Html::a('上传商品图',['goods-images/add','id'=>$model->id],['class'=>'btn btn-success btn-xs']):''?> <?=Yii::$app->user->can('goods-images/index')? \yii\bootstrap\Html::a('修改商品图',['goods-images/index','id'=>$model->id],['class'=>'btn btn-warning btn-xs']):''?></td>
         </tr>
     <?php endforeach;?>
 </table>

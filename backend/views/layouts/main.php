@@ -50,8 +50,10 @@ AppAsset::register($this);
             . '</li>';
     }
     if(!Yii::$app->user->isGuest){
-        $menuItems[] = ['label' => '修改个人信息', 'url' => ['/user/edit']];
-        $menuItems[] = ['label' => '修改密码', 'url' => ['/user/pwd']];
+        $menuItems[] = ['label'=>'个人中心','items'=>[
+            ['label' => '修改个人信息', 'url' => ['/user/edit']]   ,
+            ['label' => '修改密码', 'url' => ['/user/pwd']]
+        ]];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],

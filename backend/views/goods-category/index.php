@@ -12,7 +12,7 @@
             <td><?=$model->id?></td>
             <td><?=$model->goodscat?$model->goodscat->name:''?></td>
             <td><?=str_repeat('- ',$model->depth)?><?=$model->name?>  <span  class="glyphicon glyphicon-minus-sign expends" style="float:right"></span></td>
-            <td><?=\yii\bootstrap\Html::a('编辑',['goods-category/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['goods-category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?=Yii::$app->user->can('goods-category/edit')? \yii\bootstrap\Html::a('编辑',['goods-category/edit','id'=>$model->id],['class'=>'btn btn-primary btn-xs']):''?> <?=Yii::$app->user->can('goods-category/edit')? \yii\bootstrap\Html::a('删除',['goods-category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']):''?></td>
         </tr>
         </tbody>
     <?php endforeach;?>

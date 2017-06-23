@@ -7,7 +7,7 @@ use backend\models\GoodsImages;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 
-class GoodsImagesController extends \yii\web\Controller
+class GoodsImagesController extends RbacFilterController
 {
     public function actionAdd($id){
         //获取商品id
@@ -66,7 +66,7 @@ class GoodsImagesController extends \yii\web\Controller
                 $p1[$k] = $v['img'];
                 $p2[$k] = [
                     // 要删除商品图的地址
-                    'url' => Url::toRoute('/goods-images/delete'),
+                    'url' => Url::toRoute('/goods-images/del'),
                     // 商品图对应的商品图id
                     'key' => $v['id'],
                 ];
@@ -82,7 +82,7 @@ class GoodsImagesController extends \yii\web\Controller
             'id' => $id,
         ]);
     }
-    public function actionDelete()
+    public function actionDel()
     {
         // 前面我们已经为成功上传的banner图指定了key,此处的key也即时banner图的id
         if ($id = \Yii::$app->request->post('key')) {

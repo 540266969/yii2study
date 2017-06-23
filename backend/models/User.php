@@ -139,7 +139,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     }
     //获取用户能够使用的菜单
     public function GetMenus(){
-        $menus=Menu::find()->where(['parent_id'=>0])->all();
+        $menus=Menu::find()->where(['parent_id'=>0])->orderBy('sort desc')->all();
+        //var_dump($menus);exit;
         $menuItems=[];
         foreach ($menus as $menu){
             $items=[];
@@ -148,10 +149,14 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
                     $items[]=['label'=>$child->name,'url'=>[$child->url]];
                 }
             }
+            if($items==null){
+                continue;
+            }
             $menuItems[]=['label'=>$menu->name,'items'=>$items];
         }
         return $menuItems;
     }
+    //获取用户能够使用的index权限
     public static function findIdentity($id)
     {
         return self::findOne(['id'=>$id]);

@@ -5,7 +5,7 @@ namespace backend\controllers;
 use backend\models\ArticleCategory;
 use yii\data\Pagination;
 
-class ArticleCategoryController extends \yii\web\Controller
+class ArticleCategoryController extends RbacFilterController
 {
     public function actionIndex()
     {

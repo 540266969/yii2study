@@ -23,7 +23,8 @@
         "creocoder/yii2-nested-sets": "^0.9.0",
         "yidashi/yii2-webuploader": "*",
         "kartik-v/yii2-widget-fileinput": "@dev",
-        "kucha/ueditor": "*"
+        "kucha/ueditor": "*",
+        "flc/alidayu": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

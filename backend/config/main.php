@@ -55,6 +55,7 @@ return [
             'bucket'=>'guoxinyii2',
             'domain'=>'http://or9rw0u2k.bkt.clouddn.com',
         ],
+
     ],
     'params' => $params,
 ];

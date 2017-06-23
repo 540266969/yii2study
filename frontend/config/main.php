@@ -10,13 +10,14 @@ return [
     'id' => 'app-frontend',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'language'=>'zh-CN',
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => \frontend\models\Member::className(),
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
@@ -44,6 +45,13 @@ return [
             ],
         ],
         */
+        'msg'=>[
+            'class'=>\frontend\components\MsgQuery::className(),
+            'app_key'=>'24479335',
+            'app_secret'=>'83281d6db2b0e620765a63555117ee7e',
+            'sign_name'=>'郭欣',
+            'template_code'=>'SMS_71535102',
+        ]
     ],
     'params' => $params,
 ];

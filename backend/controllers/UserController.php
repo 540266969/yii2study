@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\components\RbacFilters;
 use backend\models\User;
 use backend\models\UserForm;
 use yii\data\Pagination;
@@ -9,6 +10,16 @@ use yii\web\Cookie;
 
 class UserController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'rbac'=>[
+                'class'=>RbacFilters::className(),
+                'only'=>['index','add','edit-user-role'],
+                ]
+        ];
+    }
+
     public function actionIndex()
     {
         $model=User::find()->where('status<>-1');
@@ -47,9 +58,6 @@ class UserController extends \yii\web\Controller
 //         return $this->redirect(['brand/index']);
 //       }
         if ($model->load(\Yii::$app->request->post())&&$model->validate()) {
-            //var_dump($model->username);
-//                 $cookie=\Yii::$app->response->cookies;
-//                $cookie->add(new Cookie(['user'=>serialize($model)]));
             return $this->redirect(['brand/index']);
             //exit;
         }
@@ -121,5 +129,24 @@ class UserController extends \yii\web\Controller
         }
         return $this->render('edit-user-role',['model'=>$model]);
     }
-    //显示用户能够操作的菜单列表
+    //删除用户
+    public function actionDel($id){
+        $model=User::findOne(['id'=>$id]);
+        $model->status=-1;
+        $model->save();
+        return $this->redirect(['user/index']);
+    }
+    public function actionResetPassword($id){
+        $model=User::findOne(['id'=>$id]);
+        $model->setScenario('pwd');
+        if($model->load(\Yii::$app->request->post())&&$model->validate()){
+            $model->password_hash=\Yii::$app->security->generatePasswordHash($model->newpassword);
+            $model->updated_at=time();
+            $model->save(false);
+            \Yii::$app->session->setFlash('success','密码重置成功');
+            return $this->redirect(['user/index']);
+        }
+        return $this->render('pwd',['model'=>$model]);
+    }
+
 }

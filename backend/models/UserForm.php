@@ -33,6 +33,10 @@ class UserForm extends Model
     }
     public function mycheck(){
         $login=User::findOne(['username'=>$this->username]);
+        if($login->status==-1){
+            $this->addError('username','该用户已经被注销如需激活请联系管理员');
+            return false;
+        }
         if($login){
             if(\Yii::$app->security->validatePassword($this->password_hash,$login->password_hash)){
                 //echo '登录成功';exit;
