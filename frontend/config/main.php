@@ -37,14 +37,14 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            'suffix'=>'.html',
             'rules' => [
             ],
         ],
-        */
         'msg'=>[
             'class'=>\frontend\components\MsgQuery::className(),
             'app_key'=>'24479335',
