@@ -124,7 +124,7 @@ class WechatController extends Controller
                         "url"  => Url::to(['wechat/login'],true)
                     ],
                     [
-                        "type" => "view",
+                        "type" => "click",
                         "name" => "订单",
                         "url"  => Url::to(['wechat/view'],true)
                     ],
@@ -187,7 +187,7 @@ class WechatController extends Controller
                 $member->save();
             }
         }
-        return $this->render('login');
+        return $this->renderPartial('login');
     }
     /*
 
