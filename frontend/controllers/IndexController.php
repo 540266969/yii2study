@@ -45,4 +45,7 @@ class IndexController extends Controller
         //var_dump($img);exit;
         return $this->render('goods',['good'=>$good,'img'=>$img,'brothers'=>$brothers]);
     }
+    public function actionSearch(){
+
+    }
 }
