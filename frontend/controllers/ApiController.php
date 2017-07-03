@@ -24,6 +24,7 @@ use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\UploadedFile;
 
 class ApiController extends Controller
 {
@@ -235,17 +236,26 @@ class ApiController extends Controller
                         return ['status'=>-1,'msg'=>'该分类下暂时没有商品'];
                     }
                 }
-                return ['status'=>1,'msg'=>'','data'=>$lists];
+
+            }else{
+              $lists=Goods::find()->where(['goods_category_id'=>$goodscate->id])->asArray()->all();
             }
+            return ['status'=>1,'msg'=>'','data'=>$lists];
         }
         return ['status'=>-1,'msg'=>'请使用get方式提交请求'];
     }
-    //通过品牌获取商品列表
+    //通过品牌获取商品列表 分页功能实现
     public function actionGetGoodsByBrand(){
         $request=\Yii::$app->request;
         if($request->isGet){
             $brand_id=$request->get('id');
-            $models=Goods::find()->where(['brand_id'=>$brand_id])->asArray()->all();
+            $per_page = \Yii::$app->request->get('per_page',2);
+            $page = \Yii::$app->request->get('page',1);
+            $page = $page < 1?1:$page;
+            $query = Goods::find()->where(['brand_id'=>$brand_id]);
+            $total = $query->count();
+            $models=$query->offset($per_page*($page-1))->limit($per_page)->asArray()->all();
+            //$models=Goods::find()->where(['brand_id'=>$brand_id])->asArray()->all();
             if($models==null){
                 return ['status'=>-1,'msg'=>'该商品暂时没有产品'];
             }
@@ -547,6 +557,45 @@ public function  actions()
     ];
 }
 //-文件上传
+public function actionUpload(){
+        $img=UploadedFile::getInstanceByName('img');
+        if ($img){
+            $fileName = '/upload/'.uniqid().'.'.$img->extension;
+            $result = $img->saveAs(\Yii::getAlias('@webroot').$fileName,0);
+            if($result){
+                return ['status'=>'1','msg'=>'','data'=>$fileName];
+            }
+            return ['status'=>'-1','msg'=>$img->error];
+        }
+    return ['status'=>'-1','msg'=>'没有文件上传'];
+        }
 //分页
+
 //手机验证码
+    public function actionSendSms()
+    {
+        //确保上一次发送短信间隔超过1分钟
+        $tel = \Yii::$app->request->post('tel');
+        if(!preg_match('/^1[34578]\d{9}$/',$tel)){
+            return ['status'=>'-1','msg'=>'电话号码不正确'];
+        }
+        //检查上次发送时间是否超过1分钟
+        $value = \Yii::$app->cache->get('time_tel_'.$tel);
+        $s = time()-$value;
+        if($s <60){
+            return ['status'=>'-1','msg'=>'请'.(60-$s).'秒后再试'];
+        }
+
+        $code = rand(1000,9999);
+        //$result = \Yii::$app->sms->setNum($tel)->setParam(['code' => $code])->send();
+        $result = 1;
+        if($result){
+            //保存当前验证码 session  mysql  redis  不能保存到cookie
+            \Yii::$app->cache->set('tel_'.$tel,$code,5*60);
+            \Yii::$app->cache->set('time_tel_'.$tel,time(),5*60);
+            return ['status'=>'1','msg'=>''];
+        }else{
+            return ['status'=>'-1','msg'=>'短信发送失败'];
+        }
+    }
 }
