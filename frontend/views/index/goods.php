@@ -114,9 +114,9 @@
             <!-- 图片预览区域 start -->
             <div class="preview fl">
                 <div class="midpic">
-                <?=\yii\helpers\Html::a('','http://web.yiishop.com'.$img->img,['class'=>'jqzoom','rel'=>'gall'])?>
+                <?=\yii\helpers\Html::a('','http://zh.guo-xin.xin'.$img->img,['class'=>'jqzoom','rel'=>'gall'])?>
 <!--                  <a href="images/preview_l1.jpg" class="jqzoom" rel="gal1">   <!-- 第一幅图片的大图 class 和 rel属性不能更改 -->
-                      <?=\yii\helpers\Html::img('http://web.yiishop.com'.$img->img,['style'=>'width:350px;'])?>
+                      <?=\yii\helpers\Html::img('http://zh.guo-xin.xin'.$img->img,['style'=>'width:350px;'])?>
 <!--                        <img src="images/preview_m1.jpg" alt="" />               <!-- 第一幅图片的中图 -->-->
                 </div>
 
@@ -129,7 +129,7 @@
                         <ul>
                             <?php foreach ($good->image as $pic):?>
                             <li class="cur">
-                                <a class="zoomThumbActive" href="javascript:void(0);" rel="{gallery: 'gal1', smallimage: 'images/preview_m1.jpg',largeimage: 'images/preview_l1.jpg'}"><?=\yii\helpers\Html::img('http://web.yiishop.com'.$pic->img)?></a>
+                                <a class="zoomThumbActive" href="javascript:void(0);" rel="{gallery: 'gal1', smallimage: 'images/preview_m1.jpg',largeimage: 'images/preview_l1.jpg'}"><?=\yii\helpers\Html::img('http://zh.guo-xin.xin'.$pic->img)?></a>
                             </li>
                             <?php endforeach;?>
                         </ul>
@@ -206,7 +206,7 @@
                     <div class="desc mt10">
                         <!-- 此处的内容 一般是通过在线编辑器添加保存到数据库，然后直接从数据库中读出 -->
                         <?php foreach ($good->image as $pic):?>
-                        <?=\yii\helpers\Html::img('http://web.yiishop.com'.$pic->img)?>
+                        <?=\yii\helpers\Html::img('http://zh.guo-xin.xin'.$pic->img)?>
                         <p style="height:10px;"></p>
                         <?php endforeach;?>
                     </div>

@@ -9,18 +9,23 @@
 namespace frontend\controllers;
 
 
+use backend\models\Goods;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Message\News;
+use frontend\models\Address;
 use frontend\models\Member;
 use frontend\models\Order;
+use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\web\Controller;
 
 class WechatController extends Controller
 {
-    public $enableCsrfValidation=false;
-    public $layout=false;
-    public function actionIndex(){
+    public $enableCsrfValidation = false;
+    public $layout = false;
+
+    public function actionIndex()
+    {
         //echo 'success';
         //echo  $_GET['echostr'];
         //* 消息回复，回复普通文本消息，回复多图文消息
@@ -31,107 +36,111 @@ class WechatController extends Controller
             //return '收到你的消息';
             switch ($message->MsgType) {
                 case 'text':
-                    switch ($message->Content){
-                        case '成都':
-                            $weather=simplexml_load_file('http://flash.weather.com.cn/wmaps/xml/sichuan.xml');
-                            foreach ($weather as $item){
-                                if($item['cityname']=='成都'){
-                                    $weather=$item['stateDetailed'];
-                                    break;
-                                }
+                    switch ($message->Content) {
+                        case '解除绑定':
+                            $openid = $message->FromUserName;
+                            $member = Member::findOne(['openid' => $openid]);
+                            //return  $openid;
+                            if ($member == null) {
+                                $app = new Application(\Yii::$app->params['wechat']);
+                                $url = $app->url;
+                                $shortUrl = $url->shorten(Url::to(['wechat/login'],true));
+                                $shortUrl=Json::decode($shortUrl,true);
+                                return '您还没有绑定帐号,请先绑定,绑定网址为:'.$shortUrl['short_url'];
+                            } else {
+                                $member->openid = null;
+                                $member->save();
+                                return '解除绑定成功';
                             }
-                            return '成都的天气是:'.$weather;
                             break;
-                        case '活动':
-                            $news = new News([
-                                'title'       => '夏日好交友',
-                                'description' => '各种美女在线等',
-                                'url'         => 'http://www.mm131.com',
-                                'image'       => 'http://img2.imgtn.bdimg.com/it/u=2030965026,1272976928&fm=26&gp=0.jpg',
-                                // ...
-                            ]);
-                            $news1 = new News([
-                                'title'       => '极品美女',
-                                'description' => '美女在线等',
-                                'url'         => 'http://www.4399.com',
-                                'image'       => 'http://image.tianjimedia.com/uploadImages/2015/285/24/586K2UOWHG9D.jpg',
-                                // ...
-                            ]);
-                            $news2 = new News([
-                                'title'       => '超级美女',
-                                'description' => '美女在线等',
-                                'url'         => 'http://www.5137.com',
-                                'image'       => 'http://image.fvideo.cn/uploadfile/2015/05/25/img37533071189339.jpg',
-                                // ...
-                            ]);
-                            return [$news,$news1,$news2];
+                        case '帮助':
+                            return '您可以发送 优惠、解除绑定 等信息';
+                            break;
+                        case '优惠':
+                            $models = Goods::find()->limit(5)->all();
+                            $lists = [];
+                            foreach ($models as $model) {
+                                $news = new News([
+                                    'title' => $model->name,
+                                    'description' => $model->shop_price,
+                                    'url' => Url::to(['index/goods', 'id' => $model->id], true),
+                                    'image' => $model->logo,
+                                    // ...
+                                ]);
+                                $lists[] = $news;
+                            }
+                            return $lists;
                             break;
                     }
-                     return '收到你的消息'.$message->Content;
-                     break;
-                     //处理菜单点击事件（点击菜单回复文本信息，点击菜单回复图文信息）
+                    return '收到你的消息' . $message->Content;
+                    break;
+                //处理菜单点击事件（点击菜单回复文本信息，点击菜单回复图文信息）
                 case 'event':
-                    if($message->Event=='CLICK'){
-                        if($message->EventKey == 'btgirl'){
-                            $news = new News([
-                                'title'       => '夏日好交友',
-                                'description' => '各种美女在线等',
-                                'url'         => 'http://www.mm131.com',
-                                'image'       => 'http://img2.imgtn.bdimg.com/it/u=2030965026,1272976928&fm=26&gp=0.jpg',
-                                // ...
-                            ]);
-                            $news1 = new News([
-                                'title'       => '极品美女',
-                                'description' => '美女在线等',
-                                'url'         => 'http://www.4399.com',
-                                'image'       => 'http://image.tianjimedia.com/uploadImages/2015/285/24/586K2UOWHG9D.jpg',
-                                // ...
-                            ]);
-                            $news2 = new News([
-                                'title'       => '超级美女',
-                                'description' => '美女在线等',
-                                'url'         => 'http://www.5137.com',
-                                'image'       => 'http://image.fvideo.cn/uploadfile/2015/05/25/img37533071189339.jpg',
-                                // ...
-                            ]);
-                            return [$news,$news1,$news2];
+                    if ($message->Event == 'CLICK') {
+                        if ($message->EventKey == 'pgoods') {
+                            $models = Goods::find()->limit(5)->all();
+                            $lists = [];
+                            foreach ($models as $model) {
+                                $news = new News([
+                                    'title' => $model->name,
+                                    'description' => $model->shop_price,
+                                    'url' => Url::to(['index/goods', 'id' => $model->id], true),
+                                    'image' => $model->logo,
+                                    // ...
+                                ]);
+                                $lists[] = $news;
+                            }
+                            return $lists;
                             break;
                         }
                     }
                     break;
+
             }
             // ...
         });
         $response = $server->serve();
         $response->send(); // Laravel 里请使用：return $response;
     }
+
     //设置菜单 （view click）
-    public function actionMenu(){
+    public function actionMenu()
+    {
         $app = new Application(\Yii::$app->params['wechat']);
         $menu = $app->menu;
         $buttons = [
             [
                 "type" => "click",
-                "name" => "今日美女",
-                "key"  => "btgirl"
+                "name" => "促销商品",
+                "key" => "pgoods"
             ],
             [
-                "name"       => "菜单",
+                "type" => "view",
+                "name" => "在线商城",
+                "url" => Url::to(['index/index'], true)
+            ],
+            [
+                "name" => "个人中心",
                 "sub_button" => [
                     [
                         "type" => "view",
-                        "name" => "登录",
-                        "url"  => Url::to(['wechat/login'],true)
+                        "name" => "绑定账户",
+                        "url" => Url::to(['wechat/login'], true)
                     ],
                     [
-                        "type" => "click",
-                        "name" => "订单",
-                        "url"  => Url::to(['wechat/view'],true)
+                        "type" => "view",
+                        "name" => "我的订单",
+                        "url" => Url::to(['wechat/order'], true)
                     ],
                     [
-                        "type" => "click",
-                        "name" => "赞一下我们",
-                        "key" => "V1001_GOOD"
+                        "type" => "view",
+                        "name" => "收货地址",
+                        "url" => Url::to(['wechat/address'], true)
+                    ],
+                    [
+                        "type" => "view",
+                        "name" => "修改密码",
+                        "url" => Url::to(['wechat/pwd'], true)
                     ],
                 ],
             ],
@@ -140,10 +149,12 @@ class WechatController extends Controller
         $menus = $menu->all();
         var_dump($menus);
     }
+
 //网页授权
-    public function actionMember(){
-        if(\Yii::$app->session->get('openid')==null){
-            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
+    public function actionMember()
+    {
+        if (\Yii::$app->session->get('openid') == null) {
+            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
             $app = new Application(\Yii::$app->params['wechat']);
             $response = $app->oauth->scopes(['snsapi_base'])
                 ->redirect();
@@ -151,11 +162,13 @@ class WechatController extends Controller
         }
 
     }
+
     //网页授权获取openid
-    public function actionOpenid(){
+    public function actionOpenid()
+    {
         $app = new Application(\Yii::$app->params['wechat']);
         $user = $app->oauth->user();
-        \Yii::$app->session->set('openid',$user->getId());
+        \Yii::$app->session->set('openid', $user->getId());
         return $this->redirect([\Yii::$app->session->get('redirect')]);
 // $user 可以用的方法:
 // $user->getId();  // 对应微信的 OPENID
@@ -166,29 +179,38 @@ class WechatController extends Controller
 // $user->getToken(); // access_token， 比如用于地址共享时使用
 
     }
-    public function actionLogin(){
-        $openid=\Yii::$app->session->get('openid');
-        if ($openid==null){
-            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
-            $app = new Application(\Yii::$app->params['wechat']);
-            $response = $app->oauth->scopes(['snsapi_base'])
-                ->redirect();
-            $response->send();
+    //用户登录
+    public function actionLogin()
+    {
+        $openid = \Yii::$app->session->get('openid');
+        $this->actionMember();
+//        if ($openid == null) {
+//            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
+//            $app = new Application(\Yii::$app->params['wechat']);
+//            $response = $app->oauth->scopes(['snsapi_base'])
+//                ->redirect();
+//            $response->send();
+//        }
+        $request = \Yii::$app->request;
+        $mem=Member::findOne(['openid'=>$openid]);
+        if($mem!=null){
+            return '你已经绑定过啦,无需进行该操作';
         }
-        $request=\Yii::$app->request;
-        if ($request->isPost){
-            $member=Member::findOne(['username'=>$request->post('username')]);
-            if($member==null){
+        if ($request->isPost) {
+            $member = Member::findOne(['username' => $request->post('username')]);
+            if ($member == null) {
                 return '用户名或者密码错误';
             }
-            if(\Yii::$app->security->validatePassword($request->post('password'),$member->password_hash)){
+            if (\Yii::$app->security->validatePassword($request->post('password'), $member->password_hash)) {
                 \Yii::$app->user->login($member);
-                $member->openid=$openid;
+                $member->openid = $openid;
                 $member->save();
+                return $this->redirect(\Yii::$app->session->get('redirect'));
             }
         }
         return $this->renderPartial('login');
     }
+
     /*
 
   * 设置菜单 （view click）
@@ -198,27 +220,96 @@ class WechatController extends Controller
   * 绑定账户
   * 获取用户的订单
   */
-    public function actionOrder(){
+    //获取订单
+    public function actionOrder()
+    {
         $openid = \Yii::$app->session->get('openid');
-        if($openid == null){
-            //获取用户的基本信息（openid），需要通过微信网页授权
-            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
-            //echo 'wechat-user';
-            $app = new Application(\Yii::$app->params['wechat']);
-            //发起网页授权
-            $response = $app->oauth->scopes(['snsapi_base'])
-                ->redirect();
-            $response->send();
-        }
-        $member = Member::findOne(['openid'=>$openid]);
-        if($member == null){
+        $this->actionMember();
+//        if ($openid == null) {
+//            //获取用户的基本信息（openid），需要通过微信网页授权
+//            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
+//            //echo 'wechat-user';
+//            $app = new Application(\Yii::$app->params['wechat']);
+//            //发起网页授权
+//            $response = $app->oauth->scopes(['snsapi_base'])
+//                ->redirect();
+//            $response->send();
+//        }
+        $member = Member::findOne(['openid' => $openid]);
+        \Yii::$app->session->remove('redirect');
+        if ($member == null) {
             //该openid没有绑定任何账户
             //引导用户绑定账户
+            \Yii::$app->session->set('redirect', ['wechat/order']);
             return $this->redirect(['wechat/login']);
-        }else{
+        } else {
             //已绑定账户
-            $orders = Order::findAll(['member_id'=>$member->id]);
-            var_dump($orders);
+            $orders = Order::findAll(['member_id' => $member->id]);
+            return $this->render('order', ['orders' => $orders]);
+            //var_dump($orders);
         }
+    }
+    //获取收货地址
+    public function actionAddress()
+    {
+        $openid = \Yii::$app->session->get('openid');
+        $this->actionMember();
+//        if ($openid == null) {
+//            //获取用户的基本信息（openid），需要通过微信网页授权
+//            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
+//            //echo 'wechat-user';
+//            $app = new Application(\Yii::$app->params['wechat']);
+//            //发起网页授权
+//            $response = $app->oauth->scopes(['snsapi_base'])
+//                ->redirect();
+//            $response->send();
+//        }
+        $member = Member::findOne(['openid' => $openid]);
+        \Yii::$app->session->remove('redirect');
+        if ($member == null) {
+            //该openid没有绑定任何账户
+            //引导用户绑定账户
+            \Yii::$app->session->set('redirect', ['wechat/address']);
+            return $this->redirect(['wechat/login']);
+        }
+        $member_id=$member->id;
+        $models=Address::findAll(['member_id'=>$member_id]);
+        return $this->render('address',['models'=>$models]);
+    }
+    //修改密码
+    public function actionPwd(){
+        $openid = \Yii::$app->session->get('openid');
+        $this->actionMember();
+//        if ($openid == null) {
+//            //获取用户的基本信息（openid），需要通过微信网页授权
+//            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
+//            //echo 'wechat-user';
+//            $app = new Application(\Yii::$app->params['wechat']);
+//            //发起网页授权
+//            $response = $app->oauth->scopes(['snsapi_base'])
+//                ->redirect();
+//            $response->send();
+//        }
+        $member = Member::findOne(['openid' => $openid]);
+        \Yii::$app->session->remove('redirect');
+        if ($member == null) {
+            //该openid没有绑定任何账户
+            //引导用户绑定账户
+            \Yii::$app->session->set('redirect', \Yii::$app->controller->action->uniqueId);
+            return $this->redirect(['wechat/login']);
+        }
+        $reques=\Yii::$app->request;
+        if($reques->isPost){
+           if(!\Yii::$app->security->validatePassword($reques->post('old_password'),$member->password_hash)){
+               return '旧密码错误';
+           }
+           if($reques->post('new_password')!=$reques->post('re_password')){
+               return '两次密码不一致';
+           }
+           $member->password_hash=\Yii::$app->security->generatePasswordHash($reques->post('new_password'));
+           $member->save();
+           return '修改成功';
+        }
+        return $this->render('pwd');
     }
 }
