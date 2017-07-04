@@ -177,11 +177,11 @@ class WechatController extends Controller
         }
         $request=\Yii::$app->request;
         if ($request->isPost){
-            $member=Member::findOne(['username'=>$request->username]);
+            $member=Member::findOne(['username'=>$request->post('username')]);
             if($member==null){
                 return '用户名或者密码错误';
             }
-            if(\Yii::$app->security->validatePassword($request->password,$member->password_hash)){
+            if(\Yii::$app->security->validatePassword($request->post('password'),$member->password_hash)){
                 \Yii::$app->user->login($member);
                 $member->openid=$openid;
                 $member->save();
